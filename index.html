@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HIDE & SKILLS — Ambient Quests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Fonts : Cinzel Decorative + Nunito -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="app-card">
+      <header class="header">
+        <div class="header-top">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            HIDE &amp; SKILLS • Ambient Add-On
+          </div>
+        </div>
+        <h1 class="title">Quest Soundscapes</h1>
+        <p class="subtitle">
+          Launch a <span>sound ambience</span> for each Situation card to
+          deepen immersion and roleplay — without changing any of the core
+          rules of the game.
+        </p>
+      </header>
+
+      <div class="grid">
+        <!-- LEFT : QUEST BUTTONS (générés en JS) -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <span>🎵</span> Quests &amp; Ambiences
+          </h2>
+          <p class="panel-caption">
+            Tap a quest to start its matching ambience. Music will loop softly
+            in the background until you stop it.
+          </p>
+
+          <div class="quest-list" id="questList"></div>
+        </section>
+
+        <!-- RIGHT : CONTROLS -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <span>⚙️</span> Master Controls
+          </h2>
+          <p class="panel-caption">
+            Use these controls during the game to adjust ambience level and stop
+            or resume the last sound quickly.
+          </p>
+
+          <div class="controls">
+            <div class="controls-row">
+              <button class="btn-stop" id="toggleButton">
+                <span>⏹</span> Stop ambience
+              </button>
+
+              <div class="volume-row">
+                <span class="icon-label">
+                  <span>🔊</span> Volume
+                </span>
+                <input
+                  type="range"
+                  id="volumeSlider"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.4"
+                />
+              </div>
+            </div>
+
+            <div class="current-info" id="currentInfo">
+              No ambience playing.
+            </div>
+
+            <p class="footer-note">
+              Tip: launch the ambience <strong>right after reading</strong> the
+              Situation card to boost immersion before players start
+              roleplaying.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
