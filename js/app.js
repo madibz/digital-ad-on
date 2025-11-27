@@ -89,8 +89,11 @@ function playQuest(quest) {
   stopCurrentAudio();
 
   const audio = new Audio("audio/" + quest.file);
-  audio.loop = true; // la piste tourne en boucle
-  audio.volume = parseFloat(volumeSlider.value);
+
+  const vol = parseFloat(volumeSlider.value);
+  audio.loop = true;
+  audio.volume = vol;         // marche sur desktop / certains mobiles
+  audio.muted = vol === 0;    // garantit le silence si slider = 0
 
   currentAudio = audio;
   currentQuest = quest;
@@ -109,6 +112,7 @@ function playQuest(quest) {
     stopCurrentAudio();
   });
 }
+
 
 // ====== GÉNÉRATION DES BOUTONS ======
 function createQuestButtons() {
@@ -147,9 +151,12 @@ toggleButton.addEventListener("click", () => {
 
 volumeSlider.addEventListener("input", () => {
   if (currentAudio) {
-    currentAudio.volume = parseFloat(volumeSlider.value);
+    const vol = parseFloat(volumeSlider.value);
+    currentAudio.volume = vol;      // fera effet surtout sur desktop
+    currentAudio.muted = vol === 0; // 0 = mute complet même sur mobile
   }
 });
+
 
 // ====== INIT ======
 createQuestButtons();
