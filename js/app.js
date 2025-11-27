@@ -58,7 +58,7 @@ const quests = [
     {
       id: 12,
       label: "Storm coming",
-      file: "2 Minutes of Calm  Nature Sounds 2 Mins  RelaxRelaxation  Birds Singing PeaceMeditation .mp3",
+      file: "2 Min Heavy Thunderstorm Sounds   Rain, Thunder & Lightning Ambience for Sleep  Soothing Music.mp3",
     },
   ];
   
@@ -87,13 +87,20 @@ const quests = [
   
   function updateToggleLabel() {
     if (currentAudio) {
+      // MODE STOP → rouge
       toggleButton.innerHTML = "<span>⏹</span> Stop ambience";
+      toggleButton.classList.remove("btn-play");
     } else if (lastQuest) {
+      // MODE PLAY → vert
       toggleButton.innerHTML = "<span>▶</span> Play last ambience";
+      toggleButton.classList.add("btn-play");
     } else {
+      // Aucun son joué auparavant
       toggleButton.innerHTML = "<span>⏹</span> Stop / Play";
+      toggleButton.classList.remove("btn-play");
     }
   }
+  
   
   function clearActiveButtons() {
     Object.values(questButtonsById).forEach((btn) =>

@@ -305,6 +305,19 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
   }
   
+  .btn-play {
+    background: radial-gradient(circle at top, #0f3b26, #0b1f12);
+    color: #5aff9c; /* vert lumineux */
+    border-color: rgba(90, 255, 156, 0.4);
+  }
+  
+  .btn-play:hover {
+    background: radial-gradient(circle at top, #125b34, #082a15);
+    transform: translateY(-1px);
+    border-color: rgba(90, 255, 156, 0.8);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
+  }
+  
   .volume-row {
     display: flex;
     align-items: center;
