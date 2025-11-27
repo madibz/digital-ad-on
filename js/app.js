@@ -2,27 +2,27 @@
 const quests = [
   {
     id: 1,
-    label: "Dragon sacrifice", // dragon bloque le chemin
+    label: "Dragon sacrifice",
     file: "Enchanted, Mystical Forest. relaxing music, deep sleep, 2 minutes MEDITATION music, SPA MUSIC, ZEN.mp3",
   },
   {
     id: 2,
-    label: "Canyon scout", // canyon étroit, éclaireur
+    label: "Canyon scout",
     file: "Cave Sound Effects - Royalty Free, Ambience Cave Sound Effects (2 Minutes).mp3",
   },
   {
     id: 3,
-    label: "Night watch", // garde de nuit, animaux au loin
+    label: "Night watch",
     file: "Jungle and Rainforest Sound Effects - Tropical Forest Ambiences from Costa Rica.mp3",
   },
   {
     id: 4,
-    label: "Breaking bridge", // pont en bois qui casse
+    label: "Breaking bridge",
     file: "2min. of forest sounds.mp3",
   },
   {
     id: 5,
-    label: "Food shortage", // rations faibles, pénalités par rôle
+    label: "Food shortage",
     file: "Campfire & River Night Ambience.mp3",
   },
 ];
@@ -34,16 +34,17 @@ const toggleButton = document.getElementById("toggleButton");
 const currentInfo = document.getElementById("currentInfo");
 
 // ====== ÉTAT AUDIO ======
-let currentAudio = null;
-let currentQuest = null;   // quest en cours
-let lastQuest = null;      // dernière quest jouée
-let questButtonsById = {}; // pour gérer les boutons actifs
+let currentAudio = null;   // objet Audio chargé (même en pause)
+let currentQuest = null;   // quest en cours de lecture
+let lastQuest = null;      // dernière quest utilisée
+let questButtonsById = {}; // pour gérer .active
+let isPlaying = false;     // true si le son est en train de jouer
 
 // ====== UI HELPERS ======
 function updateCurrentInfo() {
-  if (currentAudio && currentQuest) {
+  if (isPlaying && currentQuest) {
     currentInfo.innerHTML = `Now playing: <span>${currentQuest.label}</span>`;
-  } else if (lastQuest) {
+  } else if (currentAudio && lastQuest) {
     currentInfo.innerHTML = `Stopped. Last ambience: <span>${lastQuest.label}</span>`;
   } else {
     currentInfo.textContent = "No ambience playing.";
@@ -51,15 +52,16 @@ function updateCurrentInfo() {
 }
 
 function updateToggleLabel() {
-  if (currentAudio) {
-    // MODE STOP → rouge
+  if (isPlaying) {
+    // MODE STOP (rouge)
     toggleButton.innerHTML = "<span>⏹</span> Stop ambience";
     toggleButton.classList.remove("btn-play");
-  } else if (lastQuest) {
-    // MODE PLAY → vert
+  } else if (currentAudio && lastQuest) {
+    // MODE PLAY LAST (vert)
     toggleButton.innerHTML = "<span>▶</span> Play last ambience";
     toggleButton.classList.add("btn-play");
   } else {
+    // Aucun son chargé
     toggleButton.innerHTML = "<span>⏹</span> Stop / Play";
     toggleButton.classList.remove("btn-play");
   }
@@ -72,32 +74,40 @@ function clearActiveButtons() {
 }
 
 // ====== LOGIQUE AUDIO ======
+
+// STOP = juste pause (on garde la position)
 function stopCurrentAudio() {
   if (currentAudio) {
     currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio = null;
   }
+  isPlaying = false;
   currentQuest = null;
   clearActiveButtons();
   updateCurrentInfo();
   updateToggleLabel();
 }
 
+// Play une nouvelle quête (reset au début)
 function playQuest(quest) {
-  // stop l'ancienne ambiance si besoin
-  stopCurrentAudio();
+  // si un audio était déjà chargé, on le coupe
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  isPlaying = false;
+  clearActiveButtons();
 
   const audio = new Audio("audio/" + quest.file);
 
   const vol = parseFloat(volumeSlider.value);
   audio.loop = true;
-  audio.volume = vol;         // marche sur desktop / certains mobiles
-  audio.muted = vol === 0;    // garantit le silence si slider = 0
+  audio.volume = vol;
+  audio.muted = vol === 0; // 0 = mute total (utile sur mobile)
 
   currentAudio = audio;
   currentQuest = quest;
   lastQuest = quest;
+  isPlaying = true;
 
   const btn = questButtonsById[quest.id];
   if (btn) btn.classList.add("active");
@@ -109,10 +119,11 @@ function playQuest(quest) {
     console.error("Playback error:", err);
     currentInfo.textContent =
       "Unable to play audio. Check your file path or browser settings.";
-    stopCurrentAudio();
+    isPlaying = false;
+    clearActiveButtons();
+    updateToggleLabel();
   });
 }
-
 
 // ====== GÉNÉRATION DES BOUTONS ======
 function createQuestButtons() {
@@ -138,25 +149,42 @@ function createQuestButtons() {
 }
 
 // ====== CONTROLES GLOBAUX ======
+
+// Bouton Stop / Play last
 toggleButton.addEventListener("click", () => {
-  if (currentAudio && currentQuest) {
-    // si une ambiance est en cours -> STOP
+  if (isPlaying && currentAudio) {
+    // STOP → pause (sans reset)
     stopCurrentAudio();
-  } else if (!currentAudio && lastQuest) {
-    // si rien ne joue mais on a une dernière quest -> relance
-    playQuest(lastQuest);
+  } else if (!isPlaying && currentAudio && lastQuest) {
+    // PLAY LAST → reprend là où on s'était arrêté
+    currentAudio
+      .play()
+      .then(() => {
+        isPlaying = true;
+        currentQuest = lastQuest;
+
+        const btn = questButtonsById[lastQuest.id];
+        if (btn) btn.classList.add("active");
+
+        updateCurrentInfo();
+        updateToggleLabel();
+      })
+      .catch((err) => {
+        console.error("Playback error:", err);
+        currentInfo.textContent =
+          "Unable to play audio. Check your file path or browser settings.";
+      });
   }
-  // si pas de lastQuest, le bouton ne fait rien (au tout début)
 });
 
+// Volume (inclut mute quand slider à 0)
 volumeSlider.addEventListener("input", () => {
   if (currentAudio) {
     const vol = parseFloat(volumeSlider.value);
-    currentAudio.volume = vol;      // fera effet surtout sur desktop
-    currentAudio.muted = vol === 0; // 0 = mute complet même sur mobile
+    currentAudio.volume = vol;
+    currentAudio.muted = vol === 0;
   }
 });
-
 
 // ====== INIT ======
 createQuestButtons();
