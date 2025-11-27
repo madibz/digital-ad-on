@@ -1,13 +1,19 @@
 :root {
-    --bg-gradient: radial-gradient(circle at top, #3c1a5b 0%, #0b1020 45%, #05070d 100%);
-    --card-bg: rgba(10, 12, 25, 0.9);
-    --accent: #e4b76f;
-    --accent-soft: rgba(228, 183, 111, 0.3);
-    --accent-strong: #f5d89c;
-    --text-main: #f7f2ff;
-    --text-soft: #c1b8e0;
-    --danger: #ff6b81;
-  }
+  --bg-gradient: radial-gradient(
+      circle at top,
+      #180046 0%,   /* éclairci dérivé de #0B002A pour donner du relief */
+      #0B002A 45%,  /* ta couleur principale */
+      #050018 100%  /* dégradé plus sombre pour la profondeur */
+  );
+
+  --card-bg: #0B002A;
+  --accent: #e4b76f;
+  --accent-soft: #180046;
+  --accent-strong: #f5d89c;
+  --text-main: #f7f2ff;
+  --text-soft: #c1b8e0;
+  --danger: #ff6b81;
+}
   
   * {
     box-sizing: border-box;
